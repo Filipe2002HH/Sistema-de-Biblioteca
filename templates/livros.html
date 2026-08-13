@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Livros{% endblock %}
+{% block content %}
+  <div class="eyebrow">Acervo</div>
+  <h1>Livros</h1>
+
+  <div class="card">
+    <h3>Cadastrar novo livro</h3>
+    <form class="inline-form" method="post" action="{{ url_for('novo_livro') }}">
+      <div>
+        <label for="titulo">Título</label>
+        <input id="titulo" name="titulo" required>
+      </div>
+      <div>
+        <label for="autor">Autor</label>
+        <input id="autor" name="autor" required>
+      </div>
+      <div>
+        <label for="isbn">ISBN</label>
+        <input id="isbn" name="isbn">
+      </div>
+      <div>
+        <label for="quantidade">Quantidade</label>
+        <input id="quantidade" name="quantidade" type="number" min="1" value="1" required>
+      </div>
+      <div>
+        <button type="submit">Cadastrar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Acervo atual</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Autor</th>
+          <th>ISBN</th>
+          <th>Disponível</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in livros %}
+        <tr>
+          <td>{{ l[0] }}</td>
+          <td>{{ l[1] }}</td>
+          <td>{{ l[2] }}</td>
+          <td>{{ l[3] or '—' }}</td>
+          <td>
+            {% if l[5] == 0 %}
+              <span class="badge late">esgotado</span>
+            {% elif l[5] <= 1 %}
+              <span class="badge low">{{ l[5] }} de {{ l[4] }}</span>
+            {% else %}
+              <span class="badge ok">{{ l[5] }} de {{ l[4] }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Nenhum livro cadastrado ainda.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Empréstimos{% endblock %}
+{% block content %}
+  <div class="eyebrow">Circulação</div>
+  <h1>Empréstimos</h1>
+
+  <div class="card">
+    <h3>Novo empréstimo</h3>
+    <form class="inline-form" method="post" action="{{ url_for('novo_emprestimo') }}">
+      <div>
+        <label for="id_usuario">Usuário</label>
+        <select id="id_usuario" name="id_usuario" required>
+          {% for u in usuarios %}
+          <option value="{{ u[0] }}">{{ u[1] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="id_livro">Livro</label>
+        <select id="id_livro" name="id_livro" required>
+          {% for l in livros %}
+          <option value="{{ l[0] }}">{{ l[1] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="dias_prazo">Prazo (dias)</label>
+        <input id="dias_prazo" name="dias_prazo" type="number" min="1" value="7">
+      </div>
+      <div>
+        <button type="submit">Emprestar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Histórico de empréstimos</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuário</th>
+          <th>Livro</th>
+          <th>Emprestado em</th>
+          <th>Prazo</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in emprestimos %}
+        <tr>
+          <td>{{ e[0] }}</td>
+          <td>{{ e[1] }}</td>
+          <td>{{ e[2] }}</td>
+          <td>{{ e[3].strftime('%d/%m/%Y') if e[3] else '—' }}</td>
+          <td>{{ e[4].strftime('%d/%m/%Y') if e[4] else '—' }}</td>
+          <td>
+            {% if e[5] %}
+              <span class="badge done">devolvido</span>
+            {% else %}
+              <span class="badge ok">em aberto</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if not e[5] %}
+            <form method="post" action="{{ url_for('devolver_emprestimo', id_emprestimo=e[0]) }}">
+              <button type="submit" class="secondary">Registrar devolução</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7">Nenhum empréstimo registrado ainda.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

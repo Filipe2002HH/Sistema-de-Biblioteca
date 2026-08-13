@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Painel{% endblock %}
+{% block content %}
+  <div class="eyebrow">Visão geral</div>
+  <h1>Painel da biblioteca</h1>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-number">{{ total_livros }}</div>
+      <div class="stat-label">Títulos cadastrados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ total_usuarios }}</div>
+      <div class="stat-label">Usuários cadastrados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ emprestimos_ativos }}</div>
+      <div class="stat-label">Empréstimos em aberto</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="stat-number">{{ atrasados }}</div>
+      <div class="stat-label">Empréstimos atrasados</div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Biblioteca{% endblock %} · Sistema de Biblioteca</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav class="shelf">
+    <span class="brand">📚 Biblioteca</span>
+    <a class="spine {% if request.path == '/' %}active{% endif %}" href="{{ url_for('index') }}">Painel</a>
+    <a class="spine {% if request.path.startswith('/livros') %}active{% endif %}" href="{{ url_for('livros') }}">Livros</a>
+    <a class="spine {% if request.path.startswith('/usuarios') %}active{% endif %}" href="{{ url_for('usuarios') }}">Usuários</a>
+    <a class="spine {% if request.path.startswith('/emprestimos') %}active{% endif %}" href="{{ url_for('emprestimos') }}">Empréstimos</a>
+  </nav>
+
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}
+          <div class="flash">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

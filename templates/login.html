@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login · Sistema de Biblioteca</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav class="shelf">
+    <span class="brand">📚 Biblioteca</span>
+  </nav>
+
+  <main style="max-width: 380px; margin-top: 60px;">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}
+          <div class="flash">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="card">
+      <div class="eyebrow">Acesso restrito</div>
+      <h1 style="font-size: 1.6rem;">Entrar</h1>
+      <form method="post" style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px;">
+        <div>
+          <label for="usuario">Usuário</label>
+          <input id="usuario" name="usuario" required autofocus>
+        </div>
+        <div>
+          <label for="senha">Senha</label>
+          <input id="senha" name="senha" type="password" required>
+        </div>
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

@@ -9,7 +9,9 @@ Execução:
 Depois acesse: http://localhost:5000
 """
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from functools import wraps
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from werkzeug.security import check_password_hash
 import oracledb
 
 app = Flask(__name__)
@@ -28,9 +30,53 @@ def conectar():
 
 
 # ---------------------------------------------------------
+# Autenticação
+# ---------------------------------------------------------
+def login_obrigatorio(view):
+    @wraps(view)
+    def wrapper(*args, **kwargs):
+        if not session.get("admin_usuario"):
+            flash("Faça login para continuar.")
+            return redirect(url_for("login"))
+        return view(*args, **kwargs)
+    return wrapper
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        senha = request.form["senha"]
+
+        with conectar() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT senha_hash FROM admins WHERE usuario = :1", [usuario]
+            )
+            resultado = cur.fetchone()
+
+        if resultado and check_password_hash(resultado[0], senha):
+            session["admin_usuario"] = usuario
+            flash(f"Bem-vindo(a), {usuario}!")
+            return redirect(url_for("index"))
+        else:
+            flash("Usuário ou senha inválidos.")
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.pop("admin_usuario", None)
+    flash("Você saiu do sistema.")
+    return redirect(url_for("login"))
+
+
+# ---------------------------------------------------------
 # Página inicial - painel com resumo
 # ---------------------------------------------------------
 @app.route("/")
+@login_obrigatorio
 def index():
     with conectar() as conn:
         cur = conn.cursor()
@@ -60,6 +106,7 @@ def index():
 # Livros
 # ---------------------------------------------------------
 @app.route("/livros")
+@login_obrigatorio
 def livros():
     with conectar() as conn:
         cur = conn.cursor()
@@ -72,6 +119,7 @@ def livros():
 
 
 @app.route("/livros/novo", methods=["POST"])
+@login_obrigatorio
 def novo_livro():
     titulo = request.form["titulo"]
     autor = request.form["autor"]
@@ -95,6 +143,7 @@ def novo_livro():
 # Usuários
 # ---------------------------------------------------------
 @app.route("/usuarios")
+@login_obrigatorio
 def usuarios():
     with conectar() as conn:
         cur = conn.cursor()
@@ -104,6 +153,7 @@ def usuarios():
 
 
 @app.route("/usuarios/novo", methods=["POST"])
+@login_obrigatorio
 def novo_usuario():
     nome = request.form["nome"]
     email = request.form["email"]
@@ -123,6 +173,7 @@ def novo_usuario():
 # Empréstimos
 # ---------------------------------------------------------
 @app.route("/emprestimos")
+@login_obrigatorio
 def emprestimos():
     with conectar() as conn:
         cur = conn.cursor()
@@ -154,6 +205,7 @@ def emprestimos():
 
 
 @app.route("/emprestimos/novo", methods=["POST"])
+@login_obrigatorio
 def novo_emprestimo():
     id_usuario = int(request.form["id_usuario"])
     id_livro = int(request.form["id_livro"])
@@ -171,11 +223,12 @@ def novo_emprestimo():
 
 
 @app.route("/emprestimos/<int:id_emprestimo>/devolver", methods=["POST"])
+@login_obrigatorio
 def devolver_emprestimo(id_emprestimo):
     with conectar() as conn:
         cur = conn.cursor()
         try:
-            cur.callproc("registrar_devolucao", [id_emprestimo])
+            cur.callproc("mb_registrar_devolucao", [id_emprestimo])
             flash("Devolução registrada com sucesso.")
         except oracledb.DatabaseError as e:
             flash(f"Erro ao registrar devolução: {e}")

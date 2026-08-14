@@ -16,9 +16,13 @@ Versão web do sistema de biblioteca, construída com **Flask** (Python) e conec
 - **Usuários** (`/usuarios`) — cadastro e listagem de leitores
 - **Empréstimos** (`/emprestimos`) — registrar novo empréstimo, ver histórico e registrar devoluções
 
+## 🔒 Login
+
+O sistema exige login (usuário/senha) para acessar qualquer página. A senha é armazenada com hash (via `werkzeug.security`), nunca em texto puro.
+
 ## 🚀 Como executar
 
-1. Certifique-se de já ter criado as tabelas e objetos PL/SQL no Oracle (scripts `01_criar_tabelas.sql` e `02_plsql_objetos.sql` do projeto principal).
+1. Certifique-se de já ter criado as tabelas e objetos PL/SQL no Oracle (scripts `01_criar_tabelas.sql` e `02_plsql_objetos.sql` do projeto principal), além da tabela de admins (`03_criar_admin.sql`).
 
 2. Instale as dependências:
    ```bash
@@ -32,12 +36,18 @@ Versão web do sistema de biblioteca, construída com **Flask** (Python) e conec
    DB_DSN = "localhost:1521/XEPDB1"
    ```
 
-4. Execute:
+4. Crie seu usuário administrador (só precisa fazer isso uma vez):
+   ```bash
+   python criar_admin.py
+   ```
+   Vai pedir um nome de usuário e uma senha — use isso para fazer login no site.
+
+5. Execute a aplicação:
    ```bash
    python app.py
    ```
 
-5. Acesse no navegador: **http://localhost:5000**
+6. Acesse no navegador: **http://localhost:5000** — você será redirecionado para a tela de login.
 
 ## 📌 Próximos passos (ideias de melhoria)
 

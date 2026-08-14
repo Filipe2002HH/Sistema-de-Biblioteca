@@ -13,6 +13,7 @@
     <a class="spine {% if request.path.startswith('/livros') %}active{% endif %}" href="{{ url_for('livros') }}">Livros</a>
     <a class="spine {% if request.path.startswith('/usuarios') %}active{% endif %}" href="{{ url_for('usuarios') }}">Usuários</a>
     <a class="spine {% if request.path.startswith('/emprestimos') %}active{% endif %}" href="{{ url_for('emprestimos') }}">Empréstimos</a>
+    <a class="spine" style="margin-left: auto;" href="{{ url_for('logout') }}">Sair</a>
   </nav>
 
   <main>
